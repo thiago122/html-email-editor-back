@@ -18,8 +18,8 @@
         <!-- <script src="https://fiduswriter.github.io/diffDOM/browser/diffDOM.js"></script> -->
 
         
-        <script type="module" src="https://gpimgdev.mobi/lab/mail/index.js"></script>
-        <link rel="stylesheet" href="https://gpimgdev.mobi/lab/mail/index.css">
+        <script type="module" src="https://htmlemaileditor.com/public/editor-assets/index.js"></script>
+        <link rel="stylesheet" href="https://htmlemaileditor.com/public/editor-assets/index.css">
       <!-- <script type="module" crossorigin src="{{asset('/')}}build/assets/v1/index-585fc134.js"></script>
       <link rel="stylesheet" href="{{asset('/')}}build/assets/v1/index-22ac77f6.css"> -->
     </head>
