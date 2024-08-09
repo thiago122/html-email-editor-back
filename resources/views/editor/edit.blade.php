@@ -24,8 +24,6 @@
       <link rel="stylesheet" href="{{asset('/')}}build/assets/v1/index-22ac77f6.css"> -->
     </head>
     <body>
-        <img src="{{asset('img.webp')}}" width="100" height="100">
         <div id="app"></div>
-        
     </body>
 </html>
