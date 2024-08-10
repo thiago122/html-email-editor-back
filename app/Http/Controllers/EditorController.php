@@ -13,6 +13,7 @@ class EditorController extends Controller
 {
 
     public function edit(Email $email){
+        
         if(!auth()->check()){
             echo "not logged";
         }

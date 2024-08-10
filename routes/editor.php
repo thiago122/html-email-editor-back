@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\Cors;
-use App\Http\Controllers\EditorController;
 use App\Models\Email;
+use App\Http\Middleware\Cors;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EditorController;
+use App\Http\Controllers\PatternController;
 
 Route::prefix('editor')->group(function () {
 
@@ -14,8 +15,14 @@ Route::prefix('editor')->group(function () {
     Route::get('/edit/{email}', [EditorController::class, 'edit'])->name('email.edit');
     Route::get('/{email}', [EditorController::class, 'show']);
     Route::put('/{email}', [EditorController::class, 'update'])->name('email.update');
+    Route::post('/{email}', [EditorController::class, 'update'])->name('email.update');
+
 });
 
-Route::get('/teste', function () {
+Route::post('/pattern', [PatternController::class, 'store']);
+Route::get('/pattern', [PatternController::class, 'index']);
+
+
+Route::post('/teste', function () {
     echo auth()->check();
 });
