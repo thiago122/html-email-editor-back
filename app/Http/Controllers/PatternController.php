@@ -78,6 +78,10 @@ class PatternController extends Controller
 
     public function destroy(string $id)
     {
-        //
+        // @todo validacao
+        // verificar se o usuário pode editar a news(está no workspace ou é dono do workspace)
+        $pattern = Pattern::find($id);
+        $pattern->delete();
+        return ['delete'];
     }
 }
