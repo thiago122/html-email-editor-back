@@ -72,9 +72,26 @@ class PatternController extends Controller
 
     public function update(Request $request, string $id)
     {
+        // @todo validacao
+        // verificar se o usuário pode editar a news(está no workspace ou é dono do workspace)
 
+        $userId = env("APP_FAKE_USER_ID", Auth::id());
+
+        $pattern = Pattern::find($id);
+
+        if(!$pattern){
+            return [false];
+        }
+
+        $data = [
+            'name_pattern'=> $request->input('name_pattern'),
+            'html_pattern'=> $request->input('html_pattern'),
+        ];
+
+        $pattern->update($data);
+        
+        return json_encode(['pattern' => $pattern]);
     }
-
 
     public function destroy(string $id)
     {

@@ -22,6 +22,7 @@ Route::prefix('editor')->group(function () {
 Route::post('/pattern', [PatternController::class, 'store']);
 Route::get('/pattern', [PatternController::class, 'index']);
 Route::delete('/pattern/{id}', [PatternController::class, 'destroy']);
+Route::put('/pattern/{id}', [PatternController::class, 'update']);
 
 Route::post('/teste', function () {
     echo auth()->check();
