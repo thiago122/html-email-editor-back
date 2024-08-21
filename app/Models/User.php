@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Workspace;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -21,6 +23,11 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
+    public function workspace(): BelongsToMany
+    {
+        return $this->belongsToMany(Workspace::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -3,18 +3,19 @@
 namespace App\Livewire;
 
 use App\Models\Email;
+use Livewire\Attributes\On;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
-use PowerComponents\LivewirePowerGrid\Exportable;
-use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Footer;
 use PowerComponents\LivewirePowerGrid\Header;
 use PowerComponents\LivewirePowerGrid\PowerGrid;
+use PowerComponents\LivewirePowerGrid\Exportable;
+use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
-use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 use PowerComponents\LivewirePowerGrid\Traits\WithExport;
+use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 
 final class EmailTable extends PowerGridComponent
 {
@@ -23,15 +24,13 @@ final class EmailTable extends PowerGridComponent
     public string $tableName = 'EmailTable';
     public string $sortField = 'id'; 
     public string $sortDirection = 'desc';
+    public $workspaceId = null;
 
     public function setUp(): array
     {
         $this->showCheckBox();
 
         return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
             Header::make()->showSearchInput(),
             Footer::make()
                 ->showPerPage()
@@ -39,26 +38,39 @@ final class EmailTable extends PowerGridComponent
         ];
     }
 
+    #[On('workspace-selected')]
+    public function selectWorkspace($id = null){
+        $this->workspaceId = $id;
+    }
+
     public function datasource(): Builder
     {
-        return Email::query()
-        ->join('workspaces', function ($workspace) {
-            $workspace->on('emails.workspace_id', '=', 'workspaces.id');
-        })
-        ->join('users as creator', function ($users) {
-            $users->on('emails.created_by', '=', 'creator.id');
-        })
-        ->join('users as updater', function ($users) {
-            $users->on('emails.last_updated_by', '=', 'updater.id');
-        })
-        ->select([
-            'emails.id',
-            'emails.name',
-            'emails.created_at',
-            'creator.name as user_creator',
-            'updater.name as user_updater',
-            'workspaces.name as workspaces_name',
-        ]);
+        $query = Email::query()
+            ->join('workspaces', function ($workspace) {
+                $workspace->on('emails.workspace_id', '=', 'workspaces.id');
+            })
+            ->join('users as creator', function ($users) {
+                $users->on('emails.created_by', '=', 'creator.id');
+            })
+            ->join('users as updater', function ($users) {
+                $users->on('emails.last_updated_by', '=', 'updater.id');
+            })
+            ->select([
+                'emails.id',
+                'emails.name',
+                'emails.created_at',
+                'creator.name as user_creator',
+                'updater.name as user_updater',
+                'workspaces.name as workspaces_name',
+                'workspaces.id as w_id',
+            ]);
+
+        if($this->workspaceId){
+            $query->where('workspaces.id', '=', $this->workspaceId);
+        }
+            
+
+        return $query;
     }
 
     public function relationSearch(): array
