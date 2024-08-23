@@ -1,8 +1,9 @@
 <x-app-layout>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }} {{ auth()->check() }}
+        <h2 class="flex justify-between font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <!-- {{ __('Dashboard') }} {{ auth()->check() }} -->
+            <x-button info label="New E-mail" right-icon="plus" onclick="$openModal('create-email-modal')"/>
         </h2>
     </x-slot>
 
@@ -23,12 +24,9 @@
         <main class="grow ">
             <div class="py-12">
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div class="flex flex-wrap items-center justify-end gap-4 mb-4">
-                        <x-button info label="New E-mail" right-icon="plus" onclick="$openModal('create-email-modal')"/>
-                    </div>
                     <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg mb-5">
                         <div class="p-4 text-gray-900 dark:text-gray-100">
-                            <livewire:email-table :workspaceId="1"></livewire:email-table>
+                            <livewire:email-table></livewire:email-table>
                         </div>
                     </div>
                 </div>
@@ -73,7 +71,14 @@
     <x-modal name="manage-workspaces-modal" width="sm:max-w-5xl">
         <div class="min-w-full" x-data="{ open: false }">
             <x-card title="Manage workspace">
-                <livewire:create-workspace></livewire:create-workspace>
+               
+                <livewire:edit-workspace></livewire:edit-workspace>
+                
+                <h3 class="font-bold">Members</h3>
+                <hr class="my-3">
+
+                <livewire:member-manager></livewire:member-manager>
+
             </x-card>
         </div>
     </x-modal>
@@ -118,8 +123,7 @@
             });
 
             Livewire.on('workspace-edit', (event) => {
-                // open modal
-                $openModal('manage-workspaces-modal');
+                
             });
 
             Livewire.on('email-edit', (event) => {
@@ -128,6 +132,14 @@
             });
             
         })
+
+        function editWorkspace(id){
+            console.log(id)
+            window.Livewire.dispatch('workspace-edit', { id: id } )
+            window.Livewire.dispatch('workspace-manage-members', { id: id } )
+            // open modal
+            $openModal('manage-workspaces-modal');
+        }
     </script>
 
 

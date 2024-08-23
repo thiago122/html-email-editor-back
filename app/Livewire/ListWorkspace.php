@@ -12,6 +12,7 @@ class ListWorkspace extends Component
     public $workspaceId = null;
     
     #[On('workspace-created')]
+    #[On('workspace-updated')]
     public function render()
     {
         $user = auth()->user();

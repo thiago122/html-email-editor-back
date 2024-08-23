@@ -14,7 +14,7 @@
             wire:key="{{$workspace->id}}"> 
             <span onclick="window.Livewire.dispatch('workspace-selected', { id: {{ $workspace->id }} } )">{{$workspace->name}}</span> 
             <span 
-                onclick="window.Livewire.dispatch('workspace-edit', { id: {{ $workspace->id }} } )"
+                onclick="editWorkspace({{ $workspace->id }} )"
                 class="text-blue-500 text-sm inline-block cursor-pointer"
             >
             edit
