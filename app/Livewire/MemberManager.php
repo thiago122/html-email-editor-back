@@ -17,58 +17,25 @@ class MemberManager extends Component
     public $workspace = '';
     public $users = [];
     public $emailToFind;
+    public $date;
 
     public function render()
     {
         return view('livewire.member-manager');
     }
-
-    public function find()
+    
+    #[On('add-user-to-workspace')] // quando seleciona o usuário para adicionar no workspace
+    public function store($id)
     {
-        if(empty( $this->emailToFind)){
-            return false;
-        }
-
-        $users = User::where('email', 'like', $this->emailToFind.'%')
-                ->where('id', '!=', auth()->id())
-               ->orderBy('name')
-               ->take(10)
-               ->get();
-
-        if(empty($users)){
-            return false;
-        }
-
-        $users->map(function($member) {
-            $member->initials = $this->getInitials($member);
-        });
-        $this->users = $users;
-    }
-
-    public function store($idUser )
-    {
-
-        DB::table('workspace_user')->insert([
-            'user_id' => $idUser,
-            'workspace_id' => $this->workspace->id
-        ]);
-
+        $this->workspace->users()->attach($id);
         $this->list($this->workspace->id);
-        $this->users = [];
-        $this->emailToFind = '';
+        $this->dispatch('user-added-to-workspace'); 
     }
 
     public function destroy($idUser )
     {
-
-        $deleted = DB::table('workspace_user')
-            ->where('user_id', '=', $idUser)
-            ->where('workspace_id', '=', $this->workspace->id)
-            ->delete();
-
+        $this->workspace->users()->detach($idUser);
         $this->list($this->workspace->id);
-        $this->users = [];
-        $this->emailToFind = '';
     }
 
     #[On('workspace-manage-members')]
@@ -76,23 +43,12 @@ class MemberManager extends Component
     {
         $this->workspace = '';
         $this->members = [];
-        $this->users = [];
-        $this->emailToFind = '';
 
         $this->workspace = Workspace::find($id);
         $this->owner = User::find($this->workspace->user_id);
         $this->owner->initials = $this->getInitials($this->owner);
         
-        $members = User::query()
-                ->select([
-                    'users.id',
-                    'users.name',
-                    'users.email',
-                ])  
-                ->join('workspace_user', function ($workspace) {
-                    $workspace->on('workspace_user.user_id', '=', 'users.id');
-                })
-                ->where('workspace_user.workspace_id', '=', $id)->get();
+        $members = $this->workspace->users()->get();
 
         if(empty($members)){
             return false;
@@ -102,6 +58,7 @@ class MemberManager extends Component
             $member->initials = $this->getInitials($member);
         });
 
+        $this->date = date('Y-m-d H:i:s');
         $this->members = $members;
 
     }

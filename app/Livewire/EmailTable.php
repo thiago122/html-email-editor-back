@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Email;
+use App\Models\Workspace;
 use Livewire\Attributes\On;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -24,7 +26,7 @@ final class EmailTable extends PowerGridComponent
     public string $tableName = 'EmailTable';
     public string $sortField = 'id'; 
     public string $sortDirection = 'desc';
-    public $workspaceId = null;
+    public $workspaceIds = null;
 
     public function setUp(): array
     {
@@ -40,7 +42,7 @@ final class EmailTable extends PowerGridComponent
 
     #[On('workspace-selected')]
     public function selectWorkspace($id = null){
-        $this->workspaceId = $id;
+        $this->workspaceIds = $id;
     }
 
     public function datasource(): Builder
@@ -65,12 +67,32 @@ final class EmailTable extends PowerGridComponent
                 'workspaces.id as w_id',
             ]);
 
-        if($this->workspaceId){
-            $query->where('workspaces.id', '=', $this->workspaceId);
+        if($this->workspaceIds){
+            $ids = [$this->workspaceIds];
+        }else{
+            $ids = $this->getUserWorkspacesIds();
         }
-            
 
+        $query->whereIn('workspaces.id' , $ids );
+        
         return $query;
+    }
+
+    private function getUserWorkspacesIds()
+    {
+            $userid = auth()->id();
+            // workspaces que sou dono
+            $workspaces = Workspace::where('user_id', $userid)->get();
+            $workspacesIds = $workspaces->pluck('id');
+
+            // workspaces que participo
+            $workspacesMember = DB::table('user_workspace')
+                ->where('user_id', '=', $userid)
+                ->get();
+            
+            $workspacesMemberIds = $workspacesMember->pluck('workspace_id');
+
+            return  array_merge($workspacesIds->all(),$workspacesMemberIds->all() );        
     }
 
     public function relationSearch(): array

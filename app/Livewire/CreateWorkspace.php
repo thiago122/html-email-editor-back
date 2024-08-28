@@ -21,10 +21,12 @@ class CreateWorkspace extends Component
         $this->validate();
         $user = auth()->user();
 
-        Workspace::create([
+        $workspace = Workspace::create([
             'name'    => $this->name,
             'user_id' => $user->id
         ]);
+
+        $workspace->users()->attach(auth()->id(),['role'=>'EDITOR']);
 
         $this->name = '';
 
