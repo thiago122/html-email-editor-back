@@ -18,10 +18,12 @@ use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\PowerGridFields;
 use PowerComponents\LivewirePowerGrid\Traits\WithExport;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
+use WireUi\Traits\WireUiActions;
 
 final class EmailTable extends PowerGridComponent
 {
     use WithExport;
+    use WireUiActions;
 
     public string $tableName = 'EmailTable';
     public string $sortField = 'id'; 
@@ -47,6 +49,18 @@ final class EmailTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
+
+        $userWrokspacesId = $this->getUserWorkspacesIds();
+
+        if(!empty($this->workspaceIds) && !in_array($this->workspaceIds, $userWrokspacesId)){
+            $this->notification()->send([
+                'icon' => 'error',
+                'title' => 'Can not list workspace!',
+                'description' => 'You are not a member',
+            ]);
+            return $query = Email::query()->where('emails.id',0000);
+        }
+
         $query = Email::query()
             ->join('workspaces', function ($workspace) {
                 $workspace->on('emails.workspace_id', '=', 'workspaces.id');
@@ -70,7 +84,7 @@ final class EmailTable extends PowerGridComponent
         if($this->workspaceIds){
             $ids = [$this->workspaceIds];
         }else{
-            $ids = $this->getUserWorkspacesIds();
+            $ids = $userWrokspacesId;
         }
 
         $query->whereIn('workspaces.id' , $ids );
@@ -80,19 +94,11 @@ final class EmailTable extends PowerGridComponent
 
     private function getUserWorkspacesIds()
     {
-            $userid = auth()->id();
-            // workspaces que sou dono
-            $workspaces = Workspace::where('user_id', $userid)->get();
+            $user = auth()->user();
+            $workspaces = $user->workspaces()->where('user_workspace.user_id', $user->id )->get();
             $workspacesIds = $workspaces->pluck('id');
 
-            // workspaces que participo
-            $workspacesMember = DB::table('user_workspace')
-                ->where('user_id', '=', $userid)
-                ->get();
-            
-            $workspacesMemberIds = $workspacesMember->pluck('workspace_id');
-
-            return  array_merge($workspacesIds->all(),$workspacesMemberIds->all() );        
+            return  array_merge($workspacesIds->all() );        
     }
 
     public function relationSearch(): array

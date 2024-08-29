@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Email;
+use App\Models\Workspace;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreEmailRequest;
 use App\Http\Requests\UpdateEmailRequest;
 
@@ -18,8 +19,12 @@ class EditorController extends Controller
             echo "not logged";
         }
 
-        if(auth()->user()->id != $email->created_by){
-            echo "não te pertence";
+        $workspace = Workspace::find($email->workspace_id);
+
+        $userInWorkspace =  $workspace->users()->where('user_id', auth()->user()->id )->first();
+
+        if(!$userInWorkspace){
+            abort(401);
         }
 
         return view('editor/edit');
@@ -34,7 +39,16 @@ class EditorController extends Controller
 
     public function update(Request $request, Email $email)
     {
-        // @todo verificar se o usuário pode salvar este e-mail
+        // @todo verificar se o usuário está logado
+
+        // verifica se o usuário pode editar o e-mail
+        $workspace = Workspace::find($email->workspace_id);
+        $userInWorkspace =  $workspace->users()->where('user_id', auth()->user()->id )->first();
+
+        if(!$userInWorkspace){
+            abort(401);
+        }
+
         // @todo validar o formulário
         $email->html = $request->input('html');;
         $email->save();

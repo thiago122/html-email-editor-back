@@ -26,7 +26,7 @@ class CreateWorkspace extends Component
             'user_id' => $user->id
         ]);
 
-        $workspace->users()->attach(auth()->id(),['role'=>'EDITOR']);
+        $workspace->users()->attach(auth()->id(),['role'=>'WS:ADMIN']);
 
         $this->name = '';
 

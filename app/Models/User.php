@@ -24,9 +24,9 @@ class User extends Authenticatable
         'password',
     ];
 
-    public function workspace(): BelongsToMany
+    public function workspaces(): BelongsToMany
     {
-        return $this->belongsToMany(Workspace::class);
+        return $this->belongsToMany(Workspace::class)->withPivot('role', 'created_at');
     }
 
     /**

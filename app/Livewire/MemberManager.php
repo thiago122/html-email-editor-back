@@ -7,8 +7,7 @@ use Livewire\Component;
 use App\Models\Workspace;
 use Livewire\Attributes\On;
 
-use function PHPSTORM_META\map;
-use Illuminate\Support\Facades\DB;
+use WireUi\Traits\WireUiActions;
 
 class MemberManager extends Component
 {
@@ -18,6 +17,9 @@ class MemberManager extends Component
     public $users = [];
     public $emailToFind;
     public $date;
+    public $teste;
+
+    use WireUiActions;
 
     public function render()
     {
@@ -27,13 +29,61 @@ class MemberManager extends Component
     #[On('add-user-to-workspace')] // quando seleciona o usuário para adicionar no workspace
     public function store($id)
     {
-        $this->workspace->users()->attach($id);
+
+        // verifica se o usuário pode adicionar membros neste workspace
+        $userInWorkspace =  $this->workspace->users()->where('user_id', auth()->user()->id )->first();
+
+        // se ele for criador ou estive como dono
+        if( !$userInWorkspace || $userInWorkspace->pivot->role !== 'WS:ADMIN' ){
+
+            $this->notification()->send([
+                'icon' => 'error',
+                'title' => 'Can not add member!',
+                'description' => 'Only workspace admins can add other members',
+            ]);
+
+            return '';
+        }
+
+        $this->workspace->users()->attach($id, ['role'=>'EDITOR']);
         $this->list($this->workspace->id);
         $this->dispatch('user-added-to-workspace'); 
     }
 
     public function destroy($idUser )
     {
+
+        // verifica se o usuário pode adicionar membros neste workspace
+        $userInWorkspace =  $this->workspace->users()->where('user_id', auth()->user()->id )->first();
+
+        // dd($userInWorkspace->pivot->role);
+
+        // estive como admin
+        if( !$userInWorkspace || $userInWorkspace->pivot->role !== 'WS:ADMIN' ){
+
+            $this->notification()->send([
+                'icon' => 'error',
+                'title' => 'Can not remove member!',
+                'description' => 'Only workspace admins can add other members',
+            ]);
+
+            return  false;
+        }
+
+        // verifica se o usuário pode adicionar membros neste workspace
+        $user =  $this->workspace->users()->where('user_id', $idUser )->first();
+
+        if( $user->pivot->role == 'WS:ADMIN' ){
+
+            $this->notification()->send([
+                'icon' => 'error',
+                'title' => 'Can not remove member!',
+                'description' => 'Workspace admins can not be removed',
+            ]);
+
+            return '';
+        }
+
         $this->workspace->users()->detach($idUser);
         $this->list($this->workspace->id);
     }
@@ -43,8 +93,8 @@ class MemberManager extends Component
     {
         $this->workspace = '';
         $this->members = [];
-
         $this->workspace = Workspace::find($id);
+
         $this->owner = User::find($this->workspace->user_id);
         $this->owner->initials = $this->getInitials($this->owner);
         

@@ -13,12 +13,14 @@
             hover:text-blue-700 @if($workspaceId == $workspace->id) text-blue-700 font-bold  @endif text-sm leading-relaxed pl-3 cursor-pointer" 
             wire:key="{{$workspace->id}}"> 
             <span onclick="window.Livewire.dispatch('workspace-selected', { id: {{ $workspace->id }} } )">{{$workspace->name}}</span> 
-            <span 
-                onclick="editWorkspace({{ $workspace->id }} )"
-                class="text-blue-500 text-sm inline-block cursor-pointer"
-            >
-            edit
-        </span>
+            @if($workspace->pivot->role == 'WS:ADMIN' )
+                <span 
+                    onclick="editWorkspace({{ $workspace->id }} )"
+                    class="text-blue-500 text-sm inline-block cursor-pointer"
+                >
+                edit
+                </span>
+            @endif
         </li>
         @endforeach
     @else

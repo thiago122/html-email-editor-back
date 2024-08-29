@@ -1,4 +1,7 @@
 <div>
+    @if($teste)
+    {{$teste->id}}
+    @endif
     <div class="grid grid-cols-2 gap-5">
         <div>
             @empty(!$owner)
@@ -26,7 +29,9 @@
                             <span class="inline-block text-bold mr-5 ">{{$member->name}}</span>
                             <span class="text-sm text-red-500 cursor-pointer" wire:click="destroy({{$member->id}})" wire:confirm="Are you sure you want to delete?"> delete</span>
                         </div> 
-                        <div class="text-sm text-gray-500 dark:text-gray-400"></div>
+                        @if($member->pivot)
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{$member->pivot->role}}</div>
+                        @endif
                     </div>
                 </div>
                 @endforeach

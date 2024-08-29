@@ -16,7 +16,8 @@ class ListWorkspace extends Component
     public function render()
     {
         $user = auth()->user();
-        $this->workspaces = Workspace::where('user_id', $user->id)->get();
+        $this->workspaces = $user->workspaces()->where('user_workspace.user_id', $user->id )->get();
+        
         return view('livewire.list-workspace');
     }
 
