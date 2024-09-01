@@ -85,6 +85,20 @@
 
     <script>
         document.addEventListener('livewire:initialized', () => {
+
+            Livewire.on('email-deleted', (event) => {
+
+                // send notification
+                $wireui.notify({
+                    icon: 'success',
+                    title: 'E-mail deleted!',
+                    description: 'The list will be reloaded',
+                })
+
+                Livewire.dispatch('pg:eventRefresh-EmailTable');
+
+            });
+
             Livewire.on('email-created', (event) => {
 
                 // close modal
@@ -94,7 +108,7 @@
                 $wireui.notify({
                     icon: 'success',
                     title: 'E-mail created!',
-                    description: 'The list wil be reloaded',
+                    description: 'The list will be reloaded',
                 })
 
                 Livewire.dispatch('pg:eventRefresh-EmailTable');
@@ -130,6 +144,7 @@
                 // open modal
                 $openModal('edit-email-modal');
             });
+
             
         })
 

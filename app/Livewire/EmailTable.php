@@ -144,7 +144,13 @@ final class EmailTable extends PowerGridComponent
                 ->slot('Edit')
                 ->id()
                 ->class('text-primary-500')
-                ->dispatch('email-edit', ['rowId' => $row->id])
+                ->dispatch('email-edit', ['rowId' => $row->id]),
+            Button::add('delete')
+                ->slot('delete')
+                ->id()
+                ->class('text-red-500')
+                ->dispatch('email-delete', ['id' => $row->id])
+                ->confirm('confirm delete?')
         ];
     }
 

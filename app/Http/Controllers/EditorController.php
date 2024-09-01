@@ -33,6 +33,14 @@ class EditorController extends Controller
     public function show(Email $email)
     {
 
+        // verifica se o usuário pode editar o e-mail
+        $workspace = Workspace::find($email->workspace_id);
+        $userInWorkspace =  $workspace->users()->where('user_id', auth()->user()->id )->first();
+
+        if(!$userInWorkspace){
+            abort(401);
+        }
+
         // @todo verificar se o usuário pode ler este e-mail
         return json_encode($email);
     }
