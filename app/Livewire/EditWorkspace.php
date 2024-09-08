@@ -15,7 +15,6 @@ class EditWorkspace extends Component
 
     #[Validate('required')]
     public string $name = 'lalala';
-
     public string $id = '';
 
     public function render()
@@ -24,9 +23,38 @@ class EditWorkspace extends Component
     }
 
     #[On('workspace-edit')]
-    public function edit($id): void
+    public function edit($id)
     {
+
         $workspace = Workspace::find($id);
+
+        // // verifica se o usuário pertence
+        $userInWorkspace =  $workspace->users()->where('user_id', auth()->user()->id )->first();
+
+        // não estiver no workspace
+        if( !$userInWorkspace || !auth()->user()->id ){
+
+            $this->notification()->send([
+                'icon' => 'error',
+                'title' => 'Can not edit ',
+                'description' => 'You are not a member',
+            ]);
+
+            return  false;
+        }
+
+        // // verifica se o usuário é admin
+        if( $userInWorkspace->pivot->role != 'WS:ADMIN' ){
+
+            $this->notification()->send([
+                'icon' => 'error',
+                'title' => 'Can not edit!',
+                'description' => 'Only workspace admins can edit',
+            ]);
+
+            return false;
+        }
+
         $this->name = $workspace->name;
         $this->id = $workspace->id;
     }

@@ -31,8 +31,7 @@ class CreateEmail extends Component
 
     public function getData()
     {
-        $user = auth()->user();
-        $this->workspaces = Workspace::where('user_id', $user->id)->get();
+        $this->workspaces = Workspace::where('user_id', auth()->user()->id)->get();
     }
 
     public function save()
@@ -103,6 +102,7 @@ class CreateEmail extends Component
 
             return '';
         }
+        
         $email = $email->delete();
         $this->dispatch('email-deleted');
     }
