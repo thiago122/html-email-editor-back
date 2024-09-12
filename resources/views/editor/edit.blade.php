@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7ETN3VG7LT"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7ETN3VG7LT');
+        </script>
+
+
         <meta charset="UTF-8" />
         <link rel="icon" href="/favicon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +28,8 @@
         />
         <!-- <script src="https://fiduswriter.github.io/diffDOM/browser/diffDOM.js"></script> -->
 
-        
+        <link rel="icon" type="image/x-icon" href="<?php echo asset('logo.svg') ?>">
+
         <script type="module" src="https://htmlemaileditor.com/public/editor-assets/index.js"></script>
         <link rel="stylesheet" href="https://htmlemaileditor.com/public/editor-assets/index.css">
       <!-- <script type="module" crossorigin src="{{asset('/')}}build/assets/v1/index-585fc134.js"></script>
