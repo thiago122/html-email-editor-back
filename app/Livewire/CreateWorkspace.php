@@ -8,7 +8,9 @@ use App\Models\Workspace;
 
 class CreateWorkspace extends Component
 {
-    #[Validate('required')]
+
+
+    #[Validate('required|min:2|max:80')]
     public $name = '';
 
     public function render()

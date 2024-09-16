@@ -14,7 +14,7 @@ class CreateEmail extends Component
 
     use WireUiActions;
 
-    #[Validate('required')]
+    #[Validate('required|min:3|max:80')]
     public $name = '';
 
     #[Validate('required')]
